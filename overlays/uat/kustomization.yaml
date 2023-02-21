@@ -1,0 +1,17 @@
+bases:
+- ../../base        
+
+namespace: uat
+
+patches:
+- target:
+    kind: Ingress
+    name: ingress-display-console
+  path: ingress-patch.json
+
+configMapGenerator:
+- name: application.properties
+  files:
+  - application.properties=application.properties
+
+

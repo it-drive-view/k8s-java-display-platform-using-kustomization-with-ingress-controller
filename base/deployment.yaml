@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mywebapp
+  namespace: default
+spec:
+  replicas: 1
+  template:
+    spec: # Pod spec
+      containers:
+      - name: mycontainer
+        image: "itdriveview/java-display-console"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: config         
+          mountPath: "/app/config"
+      volumes:  
+      - name: config   
+        configMap:   
+          name: application.properties

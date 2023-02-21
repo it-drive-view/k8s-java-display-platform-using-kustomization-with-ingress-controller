@@ -1,0 +1,7 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-display-console
+spec:
+  rules:
+    - host: kustomize-prod.com

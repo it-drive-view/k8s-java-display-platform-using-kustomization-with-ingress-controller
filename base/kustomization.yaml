@@ -1,0 +1,15 @@
+
+resources: 
+- deployment.yaml
+- service.yaml
+- ingress.yaml
+
+commonLabels:
+  app: mykustomapp
+
+namePrefix:
+  kustom-
+
+nameSuffix:
+  -v1
+
