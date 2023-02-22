@@ -1,38 +1,39 @@
-1- vous devez avoir un Ingress Controller de démarré. On peut le vérifier avec cette commande 
+1- vous devez avoir un Ingress Controller de démarré. On peut le vérifier avec cette commande
 check: on doit avoir un Pod ingress-nginx-controller-xxx avec dans la colonne READY: "1/1" et dans la STATUS: "Running"
 
 kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watch
 
-    Si ce n'est pas le cas, alors utiliser cette documentation 
+    Si ce n'est pas le cas, alors utiliser cette documentation
     https://gitlab.com/lucj/k8s-exercices/-/blob/master/Ingress/nginx-ingress.md
 
-    ou, encore plus simple, si on est sur minikube, lancer la commande: 
+    ou, encore plus simple, si on est sur minikube, lancer la commande:
     minikube addons enable ingress
 
 
-2- se placer dans le répertoire (on pourra faire exactement le même déroulé avec le répertoire uat) : 
+2- se placer dans le répertoire (on pourra faire exactement le même déroulé avec le répertoire uat) :
 git/k8s-java-display-platform-using-kustomization-with-ingress-controller/overlays/prod
 
-3- on lance la création des ressources kubernetes en utilisant la feature kustomize 
+3- on lance la création des ressources kubernetes en utilisant la feature kustomize
 
-kubectl apply -k. 
+kubectl apply -k.
 
-4- le fichier de surcharge ingress-patch.yaml fait référence au nom de domaine : kustomize-prod.com,
-je dois donc le référencer dans mon fichier /etc/hosts/ 
+4- le fichier de surcharge ingress-patch.json fait référence au nom de domaine : kustomize-prod.com,
+je dois donc le référencer dans mon fichier /etc/hosts/
 
-vim /etc/hosts 
-==> j'ajoute la ligne en fin de fichier 
+5- mais avant, j'ai besoin de récupérer l'adress attachée à ma ressource Ingress.
+Je la récupère en tapant (l'option --watch permet de suivre l'avancement de l'attribution)
+
+kubectl -n prod get ingress --watch
+==> 192.168.49.2
+
+5- j'édite mon fichier hosts afin de référencer mon nom de domaine:
+
+vim /etc/hosts
+==> j'ajoute la ligne en fin de fichier
 192.168.49.2    kustomize-dev.com
 
-5- l'adresse IP 192.168.49.2 nous est renvoyée en fait par la resource Ingress,
-en tapant la commande 
+6- je lance un navigateur web selon :
 
-kubectl -n prod get ingress
-==> récupérer l'adresse IP sous le label ADDRESS
+http://kustomize-prod.com/display/console
 
-étant donné que l'adress n'est pas disponible tout de suite, il est conseillé d'utiliser cette commande pour voir le niveau d'avancement  
-kubectl -n prod get ingress --watch
-   
-6- les étapes 2 à 5 peuvent être refaites à partir de 
-
-
+7- je peux refaire les étapes 2 à 6 pour le répertoire de surharge overlays/uat
