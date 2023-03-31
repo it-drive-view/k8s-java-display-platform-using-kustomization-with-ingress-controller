@@ -1,3 +1,11 @@
+
+----------------------------------------------
+ faire tourner l'application
+----------------------------------------------
+
+0- on doit s'assurer qu'on a des namespaces prod et uat dans notre cluster (si ce n'est le cas, il faut les créer) :
+kubectl get ns
+
 1- vous devez avoir un Ingress Controller de démarré. On peut le vérifier avec cette commande
 check: on doit avoir un Pod ingress-nginx-controller-xxx avec dans la colonne READY: "1/1" et dans la STATUS: "Running"
 
@@ -9,18 +17,20 @@ kubectl get pods -n ingress-nginx -l app.kubernetes.io/name=ingress-nginx --watc
     ou, encore plus simple, si on est sur minikube, lancer la commande:
     minikube addons enable ingress
 
+    remarque : 
+    l'option --watch de la commande permet de mettre à jour le résultat de la commande toutes les 30 secondes
+    ==> il faudra peut-être attendre 1 ou 2 mises à jour le temps que le Pod ingress-nginx-controller démarre
 
 2- se placer dans le répertoire (on pourra faire exactement le même déroulé avec le répertoire uat) :
 git/k8s-java-display-platform-using-kustomization-with-ingress-controller/overlays/prod
 
-3- on lance la création des ressources kubernetes en utilisant la feature kustomize
-
+3- on lance la création des ressources kubernetes en utilisant la feature kustomize:
 kubectl apply -k.
 
-4- le fichier de surcharge ingress-patch.json fait référence au nom de domaine : kustomize-prod.com,
+4- le fichier de surcharge ingress-patch.json fait référence au nom de domaine : display-prod.com,
 je dois donc le référencer dans mon fichier /etc/hosts/
 
-5- mais avant, j'ai besoin de récupérer l'adress attachée à ma ressource Ingress.
+5- mais avant, j'ai besoin de récupérer l'adresse IP attachée à ma ressource Ingress.
 Je la récupère en tapant (l'option --watch permet de suivre l'avancement de l'attribution)
 
 kubectl -n prod get ingress --watch
@@ -30,10 +40,21 @@ kubectl -n prod get ingress --watch
 
 vim /etc/hosts
 ==> j'ajoute la ligne en fin de fichier
-192.168.49.2    kustomize-dev.com
+192.168.49.2    display-prod.com
 
 6- je lance un navigateur web selon :
 
-http://kustomize-prod.com/display/console
+http://display-prod.com/display/console
 
-7- je peux refaire les étapes 2 à 6 pour le répertoire de surharge overlays/uat
+7- je peux itérer les étapes 2 à 6 pour le répertoire de surcharge overlays/uat
+
+-----------------------------------------------
+ comprendre les mécanismes
+-----------------------------------------------
+
+A- mécanismes de la ressource Ingres (même si cela ne corrrespond pas à ce projet précisément) :
+https://docs.google.com/document/d/18N2n_cTMbw5nLXyxR0P_KlQKW0LDPzUOfvVcPLCxYZg/edit#heading=h.bw9408uxxgt9
+
+B- mécanismes de la feature kustomize (autre projet, mais permet de comprendre) :
+https://docs.google.com/document/d/13yB_gWyQcNvA21WVRhNRUmVZRQ8p5P-sJELcSGU51lY/edit#heading=h.onmae011m2mf
+
